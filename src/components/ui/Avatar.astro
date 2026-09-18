@@ -1,0 +1,39 @@
+---
+/**
+ * Avatar — a round profile image, or initials when there is no image.
+ *
+ * Props:
+ *   name: person's name (used for initials + alt text)
+ *   src:  optional image URL
+ *   size: "sm" | "md" | "lg"
+ *
+ * Example: <Avatar name="Jussi Soini" size="lg" />
+ */
+interface Props {
+  name: string;
+  src?: string;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+const { name, src, size = 'md', class: className = '' } = Astro.props;
+
+const sizes = {
+  sm: 'h-8 w-8 text-xs',
+  md: 'h-10 w-10 text-sm',
+  lg: 'h-14 w-14 text-base',
+};
+
+const initials = name
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((part) => part[0].toUpperCase())
+  .join('');
+---
+
+<span
+  class={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-200 font-semibold text-slate-600 ${sizes[size]} ${className}`}
+  title={name}
+>
+  {src ? <img src={src} alt={name} class="h-full w-full object-cover" /> : initials}
+</span>

@@ -1,0 +1,45 @@
+---
+/**
+ * Stat — a KPI card showing one number.
+ *
+ * Props:
+ *   label:  what the number measures
+ *   value:  the number itself
+ *   change: optional delta text, e.g. "+12.5%"
+ *   trend:  "up" | "down" | "flat"  (colours the change)
+ *   hint:   optional small footnote
+ *
+ * Example: <Stat label="Revenue" value="€48.2k" change="+12.5%" trend="up" />
+ */
+interface Props {
+  label: string;
+  value: string | number;
+  change?: string;
+  trend?: 'up' | 'down' | 'flat';
+  hint?: string;
+  class?: string;
+}
+const { label, value, change, trend = 'flat', hint, class: className = '' } = Astro.props;
+
+const trends = {
+  up: 'text-emerald-600',
+  down: 'text-red-600',
+  flat: 'text-slate-500',
+};
+const arrows = { up: '↑', down: '↓', flat: '→' };
+---
+
+<div class={`rounded-xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}>
+  <p class="text-sm font-medium text-slate-500">{label}</p>
+  <div class="mt-2 flex items-baseline gap-2">
+    <p class="text-3xl font-semibold tracking-tight text-slate-900">{value}</p>
+    {
+      change && (
+        <span class={`text-sm font-medium ${trends[trend]}`}>
+          {arrows[trend]} {change}
+        </span>
+      )
+    }
+  </div>
+  {hint && <p class="mt-1 text-xs text-slate-400">{hint}</p>}
+</div>

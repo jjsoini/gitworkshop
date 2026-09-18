@@ -1,0 +1,49 @@
+---
+export const title = 'Settings';
+
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/ui/Card.astro';
+import Switch from '../../components/ui/Switch.astro';
+import Label from '../../components/ui/Label.astro';
+import Input from '../../components/ui/Input.astro';
+import Button from '../../components/ui/Button.astro';
+---
+
+<Base title={title} description="Preferences for this workspace.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Settings</h1>
+    <p class="mt-2 text-slate-600">Preferences that apply to this whole workspace.</p>
+  </header>
+
+  <Card>
+    <span slot="title">Workspace</span>
+    <span slot="description">Basic details everyone on the team can see</span>
+
+    <div class="space-y-4">
+      <div class="space-y-1.5">
+        <Label for="workspace-name">Workspace name</Label>
+        <Input id="workspace-name" value="Qvik Training" />
+      </div>
+      <div class="space-y-1.5">
+        <Label for="workspace-url">Workspace URL</Label>
+        <Input id="workspace-url" value="qvik-training.example.com" />
+      </div>
+    </div>
+
+    <div slot="footer">
+      <Button size="sm">Save changes</Button>
+      <Button size="sm" variant="ghost">Cancel</Button>
+    </div>
+  </Card>
+
+  <Card class="mt-6">
+    <span slot="title">Notifications</span>
+    <span slot="description">Choose what lands in your inbox</span>
+
+    <div class="space-y-4">
+      <Switch id="notify-email" label="Email me about new comments" checked />
+      <Switch id="notify-weekly" label="Send a weekly summary" checked />
+      <Switch id="notify-marketing" label="Product announcements" />
+    </div>
+  </Card>
+</Base>

@@ -1,0 +1,49 @@
+---
+/**
+ * Progress — a horizontal progress bar.
+ *
+ * Props:
+ *   value:      0–100
+ *   label:      optional text above the bar
+ *   showValue:  show the percentage next to the label (default true)
+ *   variant:    "primary" | "success" | "warning" | "danger"
+ *
+ * Example: <Progress value={72} label="Storage used" variant="warning" />
+ */
+interface Props {
+  value: number;
+  label?: string;
+  showValue?: boolean;
+  variant?: 'primary' | 'success' | 'warning' | 'danger';
+  class?: string;
+}
+const { value, label, showValue = true, variant = 'primary', class: className = '' } = Astro.props;
+
+const pct = Math.max(0, Math.min(100, value));
+const variants = {
+  primary: 'bg-slate-900',
+  success: 'bg-emerald-500',
+  warning: 'bg-amber-500',
+  danger: 'bg-red-500',
+};
+---
+
+<div class={className}>
+  {
+    (label || showValue) && (
+      <div class="mb-1.5 flex items-center justify-between text-sm">
+        {label && <span class="font-medium text-slate-700">{label}</span>}
+        {showValue && <span class="text-slate-500">{pct}%</span>}
+      </div>
+    )
+  }
+  <div
+    class="h-2 w-full overflow-hidden rounded-full bg-slate-200"
+    role="progressbar"
+    aria-valuenow={pct}
+    aria-valuemin="0"
+    aria-valuemax="100"
+  >
+    <div class={`h-full rounded-full transition-all ${variants[variant]}`} style={`width: ${pct}%`}></div>
+  </div>
+</div>

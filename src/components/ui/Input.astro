@@ -1,0 +1,19 @@
+---
+/**
+ * Input — a single-line text field.
+ *
+ * Any standard <input> attribute (type, name, placeholder, value, ...) passes through.
+ *
+ * Example: <Input id="email" type="email" placeholder="you@qvik.fi" />
+ */
+interface Props {
+  class?: string;
+  [key: string]: any;
+}
+const { class: className = '', ...rest } = Astro.props;
+---
+
+<input
+  class={`flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+  {...rest}
+/>

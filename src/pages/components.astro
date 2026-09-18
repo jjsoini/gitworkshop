@@ -1,0 +1,316 @@
+---
+/**
+ * Component showcase — the "kitchen sink".
+ * SHARED FILE — read-only reference. Participants must not edit this.
+ */
+import Base from '../layouts/Base.astro';
+import Accordion from '../components/ui/Accordion.astro';
+import Alert from '../components/ui/Alert.astro';
+import Avatar from '../components/ui/Avatar.astro';
+import Badge from '../components/ui/Badge.astro';
+import Breadcrumb from '../components/ui/Breadcrumb.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import Input from '../components/ui/Input.astro';
+import Label from '../components/ui/Label.astro';
+import Progress from '../components/ui/Progress.astro';
+import Stat from '../components/ui/Stat.astro';
+import Switch from '../components/ui/Switch.astro';
+import Table from '../components/ui/Table.astro';
+import Tabs from '../components/ui/Tabs.astro';
+import Textarea from '../components/ui/Textarea.astro';
+
+// Example snippets are plain strings so the braces inside them render literally.
+const snippets = {
+  button: `<Button>Save changes</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline" size="sm">Small outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="danger">Delete</Button>
+<Button href="/app/inbox">Link button</Button>`,
+
+  card: `<Card>
+  <span slot="title">Monthly report</span>
+  <span slot="description">Updated 5 minutes ago</span>
+  <p>Body content goes here.</p>
+  <div slot="footer"><Button size="sm">Download</Button></div>
+</Card>`,
+
+  badge: `<Badge>Neutral</Badge>
+<Badge variant="primary">Primary</Badge>
+<Badge variant="success">Active</Badge>
+<Badge variant="warning">Pending</Badge>
+<Badge variant="danger">Failed</Badge>
+<Badge variant="info">New</Badge>
+<Badge variant="outline">Outline</Badge>`,
+
+  alert: `<Alert variant="info" title="Heads up">Something worth knowing.</Alert>
+<Alert variant="success">Saved successfully.</Alert>
+<Alert variant="warning" title="Trial ending">3 days left.</Alert>
+<Alert variant="error" title="Upload failed">Try again.</Alert>`,
+
+  form: `<Label for="email">Email address</Label>
+<Input id="email" type="email" placeholder="you@qvik.fi" />
+
+<Label for="notes">Notes</Label>
+<Textarea id="notes" rows={4} placeholder="Write something..." />`,
+
+  avatar: `<Avatar name="Aino Virtanen" size="sm" />
+<Avatar name="Mikko Laine" />
+<Avatar name="Sofia Nieminen" size="lg" />`,
+
+  stat: `<Stat label="Revenue" value="EUR 48.2k" change="+12.5%" trend="up" hint="vs. last month" />
+<Stat label="Churn" value="1.8%" change="-0.3pp" trend="down" />`,
+
+  table: `<Table
+  columns={["Name", "Role", "Status"]}
+  rows={[
+    ["Aino Virtanen", "Designer", "Active"],
+    ["Mikko Laine", "Developer", "Active"],
+  ]}
+  caption="Updated nightly."
+/>`,
+
+  tabs: `<Tabs tabs={[{ id: "overview", label: "Overview" }, { id: "activity", label: "Activity" }]}>
+  <p slot="overview">Overview content</p>
+  <p slot="activity">Activity content</p>
+</Tabs>`,
+
+  accordion: `<Accordion items={[{ id: "a", title: "What is a branch?" }]} open="a">
+  <p slot="a">A branch is your own line of work.</p>
+</Accordion>`,
+
+  switch: `<Switch id="notify" label="Email notifications" checked />
+<Switch id="beta" label="Join the beta" />`,
+
+  progress: `<Progress value={72} label="Storage used" />
+<Progress value={45} label="Sprint progress" variant="success" />`,
+
+  breadcrumb: `<Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Reports" }]} />`,
+};
+---
+
+<Base title="Component kit" description="Every reusable component with example usage.">
+  <header class="mb-10">
+    <Badge variant="outline">Reference · read-only</Badge>
+    <h1 class="mt-4 text-3xl font-semibold tracking-tight">Component kit</h1>
+    <p class="mt-2 max-w-2xl text-slate-600">
+      Everything in <code class="font-mono text-sm">src/components/ui/</code>, with copy-pasteable
+      usage. Import what you need at the top of your page, for example
+      <code class="font-mono text-sm">import Button from '../../components/ui/Button.astro';</code>
+    </p>
+  </header>
+
+  <!-- Button -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Button</h2>
+    <p class="mb-4 text-sm text-slate-500">
+      Variants: primary, secondary, outline, ghost, danger. Sizes: sm, md, lg. Add
+      <code class="font-mono">href</code> to render a link.
+    </p>
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-wrap items-center gap-3">
+        <Button>Save changes</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="outline" size="sm">Small outline</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="danger">Delete</Button>
+        <Button href="/app/inbox">Link button</Button>
+      </div>
+      <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-5">
+        <Button size="sm">Small</Button>
+        <Button size="md">Medium</Button>
+        <Button size="lg">Large</Button>
+      </div>
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.button}</code></pre>
+  </section>
+
+  <!-- Card -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Card</h2>
+    <p class="mb-4 text-sm text-slate-500">
+      Optional slots: <code class="font-mono">title</code>,
+      <code class="font-mono">description</code>, default content, and
+      <code class="font-mono">footer</code>.
+    </p>
+    <Card>
+      <span slot="title">Monthly report</span>
+      <span slot="description">Updated 5 minutes ago</span>
+      <p>Body content goes here. Anything you put between the tags lands in this area.</p>
+      <div slot="footer"><Button size="sm">Download</Button></div>
+    </Card>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.card}</code></pre>
+  </section>
+
+  <!-- Badge -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Badge</h2>
+    <p class="mb-4 text-sm text-slate-500">Small status labels in seven colours.</p>
+    <div class="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Badge>Neutral</Badge>
+      <Badge variant="primary">Primary</Badge>
+      <Badge variant="success">Active</Badge>
+      <Badge variant="warning">Pending</Badge>
+      <Badge variant="danger">Failed</Badge>
+      <Badge variant="info">New</Badge>
+      <Badge variant="outline">Outline</Badge>
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.badge}</code></pre>
+  </section>
+
+  <!-- Alert -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Alert</h2>
+    <p class="mb-4 text-sm text-slate-500">Four variants, with an optional title.</p>
+    <div class="space-y-3">
+      <Alert variant="info" title="Heads up">Something worth knowing.</Alert>
+      <Alert variant="success">Saved successfully.</Alert>
+      <Alert variant="warning" title="Trial ending">Your trial ends in 3 days.</Alert>
+      <Alert variant="error" title="Upload failed">The file was too large. Try again.</Alert>
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.alert}</code></pre>
+  </section>
+
+  <!-- Form controls -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Label, Input & Textarea</h2>
+    <p class="mb-4 text-sm text-slate-500">
+      Match the Label's <code class="font-mono">for</code> to the field's
+      <code class="font-mono">id</code>.
+    </p>
+    <div class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="space-y-1.5">
+        <Label for="demo-email">Email address</Label>
+        <Input id="demo-email" type="email" placeholder="you@qvik.fi" />
+      </div>
+      <div class="space-y-1.5">
+        <Label for="demo-notes">Notes</Label>
+        <Textarea id="demo-notes" rows={3} placeholder="Write something..." />
+      </div>
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.form}</code></pre>
+  </section>
+
+  <!-- Avatar -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Avatar</h2>
+    <p class="mb-4 text-sm text-slate-500">
+      Shows initials from <code class="font-mono">name</code>, or an image if you pass
+      <code class="font-mono">src</code>.
+    </p>
+    <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Avatar name="Aino Virtanen" size="sm" />
+      <Avatar name="Mikko Laine" />
+      <Avatar name="Sofia Nieminen" size="lg" />
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.avatar}</code></pre>
+  </section>
+
+  <!-- Stat -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Stat</h2>
+    <p class="mb-4 text-sm text-slate-500">A KPI card. Trend colours the change text.</p>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <Stat label="Revenue" value="€48.2k" change="+12.5%" trend="up" hint="vs. last month" />
+      <Stat label="Churn" value="1.8%" change="-0.3pp" trend="down" />
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.stat}</code></pre>
+  </section>
+
+  <!-- Table -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Table</h2>
+    <p class="mb-4 text-sm text-slate-500">Pass column headers and an array of rows.</p>
+    <Table
+      columns={['Name', 'Role', 'Status']}
+      rows={[
+        ['Aino Virtanen', 'Designer', 'Active'],
+        ['Mikko Laine', 'Developer', 'Active'],
+        ['Sofia Nieminen', 'Manager', 'Away'],
+      ]}
+      caption="Updated nightly."
+    />
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.table}</code></pre>
+  </section>
+
+  <!-- Tabs -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Tabs</h2>
+    <p class="mb-4 text-sm text-slate-500">
+      Each tab's content goes in a slot named after its <code class="font-mono">id</code>.
+    </p>
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Tabs
+        tabs={[
+          { id: 'overview', label: 'Overview' },
+          { id: 'activity', label: 'Activity' },
+          { id: 'settings', label: 'Settings' },
+        ]}
+      >
+        <p slot="overview">The overview panel. This one is visible first.</p>
+        <p slot="activity">The activity panel. Click the tabs to switch.</p>
+        <p slot="settings">The settings panel.</p>
+      </Tabs>
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.tabs}</code></pre>
+  </section>
+
+  <!-- Accordion -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Accordion</h2>
+    <p class="mb-4 text-sm text-slate-500">
+      Collapsible sections; one open at a time. Use <code class="font-mono">open</code> to choose
+      which starts expanded.
+    </p>
+    <Accordion
+      items={[
+        { id: 'branch', title: 'What is a branch?' },
+        { id: 'pr', title: 'What is a pull request?' },
+      ]}
+      open="branch"
+    >
+      <p slot="branch">A branch is your own line of work, separate from everyone else's.</p>
+      <p slot="pr">A pull request asks to merge your branch back into the main branch.</p>
+    </Accordion>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.accordion}</code></pre>
+  </section>
+
+  <!-- Switch -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Switch</h2>
+    <p class="mb-4 text-sm text-slate-500">
+      An on/off toggle. Each one needs a unique <code class="font-mono">id</code>.
+    </p>
+    <div class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Switch id="demo-notify" label="Email notifications" checked />
+      <Switch id="demo-beta" label="Join the beta programme" />
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.switch}</code></pre>
+  </section>
+
+  <!-- Progress -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Progress</h2>
+    <p class="mb-4 text-sm text-slate-500">A bar from 0 to 100, in four colours.</p>
+    <div class="space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Progress value={72} label="Storage used" />
+      <Progress value={45} label="Sprint progress" variant="success" />
+      <Progress value={88} label="Seats used" variant="warning" />
+      <Progress value={97} label="API quota" variant="danger" />
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.progress}</code></pre>
+  </section>
+
+  <!-- Breadcrumb -->
+  <section class="mb-12">
+    <h2 class="mb-1 text-lg font-semibold">Breadcrumb</h2>
+    <p class="mb-4 text-sm text-slate-500">The last item is styled as the current page.</p>
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Breadcrumb
+        items={[{ label: 'Home', href: '/' }, { label: 'Reports', href: '/app/reports' }, { label: 'Q3 2026' }]}
+      />
+    </div>
+    <pre class="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{snippets.breadcrumb}</code></pre>
+  </section>
+</Base>

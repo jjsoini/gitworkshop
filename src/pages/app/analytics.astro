@@ -1,0 +1,46 @@
+---
+export const title = 'Analytics';
+
+import Base from '../../layouts/Base.astro';
+import Tabs from '../../components/ui/Tabs.astro';
+import Stat from '../../components/ui/Stat.astro';
+import Progress from '../../components/ui/Progress.astro';
+
+const channels = [
+  { name: 'Organic search', share: 46 },
+  { name: 'Direct', share: 28 },
+  { name: 'Referral', share: 17 },
+  { name: 'Social', share: 9 },
+];
+---
+
+<Base title={title} description="Traffic and engagement numbers.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Analytics</h1>
+    <p class="mt-2 text-slate-600">How people are finding and using the product.</p>
+  </header>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    <Stat label="Sessions" value="18.4k" change="+6.1%" trend="up" />
+    <Stat label="Avg. session" value="4m 12s" change="+18s" trend="up" />
+    <Stat label="Bounce rate" value="38%" change="-2.4pp" trend="down" />
+  </div>
+
+  <div class="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <Tabs
+      tabs={[
+        { id: 'channels', label: 'Channels' },
+        { id: 'devices', label: 'Devices' },
+      ]}
+    >
+      <div slot="channels" class="space-y-5">
+        {channels.map((channel) => <Progress value={channel.share} label={channel.name} />)}
+      </div>
+      <div slot="devices" class="space-y-5">
+        <Progress value={58} label="Desktop" variant="success" />
+        <Progress value={36} label="Mobile" variant="success" />
+        <Progress value={6} label="Tablet" variant="success" />
+      </div>
+    </Tabs>
+  </div>
+</Base>

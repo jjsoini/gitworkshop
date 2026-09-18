@@ -1,0 +1,48 @@
+---
+/**
+ * Table — a styled table. Give it `columns` and `rows`.
+ *
+ * Props:
+ *   columns: string[]        — header labels
+ *   rows:    (string|number)[][] — one array per row
+ *   caption: optional text under the table
+ *
+ * Example:
+ *   <Table columns={["Name", "Role"]} rows={[["Aino", "Designer"], ["Mikko", "Developer"]]} />
+ */
+interface Props {
+  columns: string[];
+  rows: (string | number)[][];
+  caption?: string;
+  class?: string;
+}
+const { columns, rows, caption, class: className = '' } = Astro.props;
+---
+
+<div class={`overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm ${className}`}>
+  <table class="w-full text-left text-sm">
+    <thead class="border-b border-slate-200 bg-slate-50">
+      <tr>
+        {
+          columns.map((col) => (
+            <th class="px-4 py-3 font-medium text-slate-600">{col}</th>
+          ))
+        }
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {
+        rows.map((row) => (
+          <tr class="transition-colors hover:bg-slate-50">
+            {row.map((cell, i) => (
+              <td class={`px-4 py-3 ${i === 0 ? 'font-medium text-slate-900' : 'text-slate-600'}`}>
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  {caption && <p class="border-t border-slate-100 px-4 py-2 text-xs text-slate-400">{caption}</p>}
+</div>

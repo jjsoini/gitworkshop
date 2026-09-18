@@ -1,0 +1,68 @@
+---
+export const title = 'Team';
+
+import Base from '../../layouts/Base.astro';
+import Avatar from '../../components/ui/Avatar.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Card from '../../components/ui/Card.astro';
+import Accordion from '../../components/ui/Accordion.astro';
+import Button from '../../components/ui/Button.astro';
+
+const members = [
+  { name: 'Aino Virtanen', role: 'Product Designer', status: 'Active' },
+  { name: 'Mikko Laine', role: 'Backend Developer', status: 'Active' },
+  { name: 'Sofia Nieminen', role: 'Engineering Manager', status: 'Away' },
+  { name: 'Otto Koskinen', role: 'Frontend Developer', status: 'Active' },
+];
+---
+
+<Base title={title} description="Everyone in this workspace.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Team</h1>
+    <p class="mt-2 text-slate-600">Everyone with access to this workspace.</p>
+  </header>
+
+  <Card>
+    <span slot="title">Members</span>
+    <span slot="description">4 of 25 seats used</span>
+
+    <ul class="divide-y divide-slate-100">
+      {
+        members.map((member) => (
+          <li class="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
+            <Avatar name={member.name} />
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-slate-900">{member.name}</p>
+              <p class="text-slate-500">{member.role}</p>
+            </div>
+            <Badge variant={member.status === 'Active' ? 'success' : 'warning'}>
+              {member.status}
+            </Badge>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div slot="footer">
+      <Button size="sm" variant="outline">Invite member</Button>
+    </div>
+  </Card>
+
+  <h2 class="mb-3 mt-8 text-lg font-semibold">Frequently asked</h2>
+  <Accordion
+    items={[
+      { id: 'roles', title: 'What can each role do?' },
+      { id: 'invite', title: 'How do I invite someone?' },
+      { id: 'remove', title: 'What happens when I remove a member?' },
+    ]}
+    open="roles"
+  >
+    <p slot="roles">
+      Admins manage billing and members. Editors can change content. Viewers have read-only access.
+    </p>
+    <p slot="invite">Use the Invite member button above and enter their work email address.</p>
+    <p slot="remove">
+      They lose access immediately, but everything they created stays in the workspace.
+    </p>
+  </Accordion>
+</Base>

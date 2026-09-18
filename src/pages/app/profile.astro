@@ -1,0 +1,39 @@
+---
+export const title = 'Profile';
+
+import Base from '../../layouts/Base.astro';
+import Avatar from '../../components/ui/Avatar.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Card from '../../components/ui/Card.astro';
+import Label from '../../components/ui/Label.astro';
+import Textarea from '../../components/ui/Textarea.astro';
+import Button from '../../components/ui/Button.astro';
+---
+
+<Base title={title} description="Your personal details.">
+  <header class="mb-8 flex items-center gap-5">
+    <Avatar name="Alex Mercer" size="lg" />
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight">Profile</h1>
+      <p class="mt-1 flex items-center gap-2 text-slate-600">
+        Alex Mercer <Badge variant="success">Active</Badge>
+      </p>
+    </div>
+  </header>
+
+  <Card>
+    <span slot="title">About you</span>
+    <span slot="description">Shown to everyone in the workspace</span>
+
+    <div class="space-y-1.5">
+      <Label for="bio">Short bio</Label>
+      <Textarea id="bio" rows={4} placeholder="Tell your team what you work on..."
+        >Product designer working on onboarding and growth. Coffee first, then pixels.</Textarea
+      >
+    </div>
+
+    <div slot="footer">
+      <Button size="sm">Update profile</Button>
+    </div>
+  </Card>
+</Base>

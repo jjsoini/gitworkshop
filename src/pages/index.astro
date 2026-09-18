@@ -1,0 +1,79 @@
+---
+/**
+ * Landing page. SHARED FILE — workshop participants must not edit this.
+ */
+import Base from '../layouts/Base.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+import Badge from '../components/ui/Badge.astro';
+import Alert from '../components/ui/Alert.astro';
+import Stat from '../components/ui/Stat.astro';
+
+const pageModules = import.meta.glob<Record<string, any>>('./app/*.astro', { eager: true });
+
+const pages = Object.entries(pageModules)
+  .map(([path, mod]) => {
+    const slug = path.split('/').pop()!.replace(/\.astro$/, '');
+    const label =
+      typeof mod.title === 'string'
+        ? mod.title
+        : slug.charAt(0).toUpperCase() + slug.slice(1);
+    return { slug, label, href: `/app/${slug}` };
+  })
+  .sort((a, b) => a.label.localeCompare(b.label));
+---
+
+<Base title="Home" description="Qvik Git + Claude Code workshop demo app.">
+  <header class="mb-8">
+    <Badge variant="outline">Workshop demo</Badge>
+    <h1 class="mt-4 text-4xl font-semibold tracking-tight">Qvik Git + Claude Code Workshop</h1>
+    <p class="mt-3 max-w-2xl text-lg text-slate-600">
+      A small Astro app built for practising the everyday git flow: branch, commit, push, pull
+      request. Everyone owns one page, so all our work merges cleanly.
+    </p>
+  </header>
+
+  <Alert variant="info" title="How this works">
+    You are assigned one page under <code class="font-mono">src/pages/app/</code>. Edit only that
+    file, use any component from <code class="font-mono">src/components/ui/</code>, then open a pull
+    request.
+  </Alert>
+
+  <div class="mt-8 grid gap-4 sm:grid-cols-3">
+    <Stat label="App pages" value={pages.length} hint="one per participant" />
+    <Stat label="UI components" value="15" hint="ready to drop in" />
+    <Stat label="Shared files to edit" value="0" hint="that's the point" />
+  </div>
+
+  <h2 class="mb-4 mt-10 text-xl font-semibold tracking-tight">Pick your page</h2>
+  <div class="grid gap-3 sm:grid-cols-2">
+    {
+      pages.map((page) => (
+        <a
+          href={page.href}
+          class="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50"
+        >
+          <span>
+            <span class="block font-medium text-slate-900">{page.label}</span>
+            <span class="block font-mono text-xs text-slate-400">
+              src/pages/app/{page.slug}.astro
+            </span>
+          </span>
+          <span class="text-slate-300 transition-transform group-hover:translate-x-0.5">→</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <Card class="mt-10">
+    <span slot="title">Need a component?</span>
+    <span slot="description">Browse the kit before writing anything from scratch</span>
+    <p>
+      The component showcase lists every available component with copy-pasteable example usage —
+      buttons, cards, badges, alerts, tables, tabs, accordions and more.
+    </p>
+    <div slot="footer">
+      <Button href="/components" size="sm">Open the component kit</Button>
+    </div>
+  </Card>
+</Base>

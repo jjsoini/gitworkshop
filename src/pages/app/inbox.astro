@@ -1,0 +1,48 @@
+---
+export const title = 'Inbox';
+
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/ui/Card.astro';
+import Avatar from '../../components/ui/Avatar.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+
+const messages = [
+  { name: 'Aino Virtanen', subject: 'Re: design review notes', time: '09:14', unread: true },
+  { name: 'Mikko Laine', subject: 'Deployment finished successfully', time: '08:40', unread: true },
+  { name: 'Sofia Nieminen', subject: 'Workshop agenda for Friday', time: 'Yesterday', unread: false },
+  { name: 'Otto Koskinen', subject: 'Invoice #2291 approved', time: 'Yesterday', unread: false },
+];
+---
+
+<Base title={title} description="Messages and notifications in one place.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Inbox</h1>
+    <p class="mt-2 text-slate-600">Messages and notifications, newest first.</p>
+  </header>
+
+  <Card>
+    <span slot="title">Recent messages</span>
+    <span slot="description">2 unread</span>
+
+    <ul class="divide-y divide-slate-100">
+      {
+        messages.map((message) => (
+          <li class="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
+            <Avatar name={message.name} />
+            <div class="min-w-0 flex-1">
+              <p class="truncate font-medium text-slate-900">{message.name}</p>
+              <p class="truncate text-slate-500">{message.subject}</p>
+            </div>
+            {message.unread && <Badge variant="info">New</Badge>}
+            <span class="shrink-0 text-xs text-slate-400">{message.time}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div slot="footer">
+      <Button size="sm" variant="outline">Mark all as read</Button>
+    </div>
+  </Card>
+</Base>

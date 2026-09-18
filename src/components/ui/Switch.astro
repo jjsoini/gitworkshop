@@ -1,0 +1,31 @@
+---
+/**
+ * Switch — an on/off toggle. It is a real checkbox, styled with Tailwind only.
+ *
+ * Props:
+ *   id:      needed so the label can be clicked
+ *   label:   text shown next to the toggle
+ *   checked: starts on when true
+ *
+ * Example: <Switch id="notify" label="Email notifications" checked />
+ */
+interface Props {
+  id: string;
+  label?: string;
+  checked?: boolean;
+  name?: string;
+  class?: string;
+}
+const { id, label, checked = false, name, class: className = '' } = Astro.props;
+---
+
+<div class={`flex items-center gap-3 ${className}`}>
+  <input type="checkbox" id={id} name={name} checked={checked} class="peer sr-only" />
+  <label
+    for={id}
+    class="relative h-6 w-11 shrink-0 cursor-pointer rounded-full bg-slate-300 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-slate-900 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-slate-900 peer-focus-visible:ring-offset-2"
+  >
+    <span class="sr-only">{label ?? 'Toggle'}</span>
+  </label>
+  {label && <label for={id} class="cursor-pointer text-sm text-slate-700">{label}</label>}
+</div>

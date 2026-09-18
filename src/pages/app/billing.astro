@@ -1,0 +1,40 @@
+---
+export const title = 'Billing';
+
+import Base from '../../layouts/Base.astro';
+import Stat from '../../components/ui/Stat.astro';
+import Alert from '../../components/ui/Alert.astro';
+import Table from '../../components/ui/Table.astro';
+import Progress from '../../components/ui/Progress.astro';
+---
+
+<Base title={title} description="Plan, invoices and usage.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Billing</h1>
+    <p class="mt-2 text-slate-600">Your plan, usage and past invoices.</p>
+  </header>
+
+  <Alert variant="warning" title="Payment method expires soon">
+    The card ending in 4242 expires next month. Update it to avoid interruption.
+  </Alert>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-2">
+    <Stat label="Current plan" value="Team" hint="€49 / month" />
+    <Stat label="Next invoice" value="€49.00" hint="Due 1 October 2026" />
+  </div>
+
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <Progress value={68} label="Seats used (17 of 25)" />
+    <Progress value={91} label="Storage used" variant="danger" class="mt-5" />
+  </div>
+
+  <h2 class="mb-3 mt-8 text-lg font-semibold">Recent invoices</h2>
+  <Table
+    columns={['Invoice', 'Date', 'Amount', 'Status']}
+    rows={[
+      ['#2291', '1 Sep 2026', '€49.00', 'Paid'],
+      ['#2244', '1 Aug 2026', '€49.00', 'Paid'],
+      ['#2198', '1 Jul 2026', '€49.00', 'Paid'],
+    ]}
+  />
+</Base>

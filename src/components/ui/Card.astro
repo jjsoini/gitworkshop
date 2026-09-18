@@ -1,0 +1,53 @@
+---
+/**
+ * Card — a bordered container. Use the named slots you need; all are optional.
+ *
+ * Slots: title, description, default (body), footer
+ *
+ * Example:
+ *   <Card>
+ *     <span slot="title">Monthly report</span>
+ *     <span slot="description">Updated 5 minutes ago</span>
+ *     <p>Body content goes here.</p>
+ *     <div slot="footer"><Button size="sm">Download</Button></div>
+ *   </Card>
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+
+const hasHeader = Astro.slots.has('title') || Astro.slots.has('description');
+const hasFooter = Astro.slots.has('footer');
+---
+
+<div class={`rounded-xl border border-slate-200 bg-white shadow-sm ${className}`}>
+  {
+    hasHeader && (
+      <div class="flex flex-col gap-1 border-b border-slate-100 px-6 py-5">
+        {Astro.slots.has('title') && (
+          <h3 class="text-base font-semibold leading-none text-slate-900">
+            <slot name="title" />
+          </h3>
+        )}
+        {Astro.slots.has('description') && (
+          <p class="text-sm text-slate-500">
+            <slot name="description" />
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  <div class="px-6 py-5 text-sm text-slate-700">
+    <slot />
+  </div>
+
+  {
+    hasFooter && (
+      <div class="flex items-center gap-3 border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+        <slot name="footer" />
+      </div>
+    )
+  }
+</div>

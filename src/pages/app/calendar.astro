@@ -1,0 +1,48 @@
+---
+export const title = 'Calendar';
+
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/ui/Card.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Alert from '../../components/ui/Alert.astro';
+
+const events = [
+  { time: '09:00', title: 'Daily standup', kind: 'Recurring' },
+  { time: '11:30', title: 'Design critique', kind: 'Team' },
+  { time: '14:00', title: 'Git & Claude Code workshop', kind: 'Workshop' },
+  { time: '16:15', title: '1:1 with Sofia', kind: 'Personal' },
+];
+---
+
+<Base title={title} description="What's happening today and this week.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Calendar</h1>
+    <p class="mt-2 text-slate-600">Everything scheduled for today, in order.</p>
+  </header>
+
+  <Alert variant="info" title="Friday, 18 September">
+    You have 4 events today and one free afternoon slot after 15:00.
+  </Alert>
+
+  <Card class="mt-6">
+    <span slot="title">Today's schedule</span>
+
+    <ol class="space-y-4">
+      {
+        events.map((event) => (
+          <li class="flex items-start gap-4">
+            <span class="w-14 shrink-0 pt-0.5 text-sm font-medium tabular-nums text-slate-400">
+              {event.time}
+            </span>
+            <div class="flex-1 border-l-2 border-slate-200 pl-4">
+              <p class="font-medium text-slate-900">{event.title}</p>
+              <Badge variant="outline" class="mt-1.5">
+                {event.kind}
+              </Badge>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </Card>
+</Base>

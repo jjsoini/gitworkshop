@@ -1,0 +1,55 @@
+---
+/**
+ * Accordion — collapsible sections. Built on <details>, so it needs almost no JS.
+ *
+ * Props:
+ *   items: { id: string; title: string }[]
+ *   open:  id of the section that starts open (optional)
+ *
+ * Each section's content goes in a slot named after its id.
+ *
+ * Example:
+ *   <Accordion items={[{ id: "a", title: "What is a branch?" }]} open="a">
+ *     <p slot="a">A branch is your own line of work.</p>
+ *   </Accordion>
+ */
+interface Props {
+  items: { id: string; title: string }[];
+  open?: string;
+  class?: string;
+}
+const { items, open, class: className = '' } = Astro.props;
+---
+
+<div class={`divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm ${className}`} data-accordion>
+  {
+    items.map((item) => (
+      <details class="group" open={item.id === open}>
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50">
+          {item.title}
+          <span class="text-slate-400 transition-transform group-open:rotate-180" aria-hidden="true">
+            ▾
+          </span>
+        </summary>
+        <div class="px-5 pb-5 text-sm text-slate-600">
+          <slot name={item.id} />
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<script>
+  // Keeps one section open at a time within each accordion.
+  document.querySelectorAll('[data-accordion]').forEach((root) => {
+    const sections = root.querySelectorAll<HTMLDetailsElement>('details');
+    sections.forEach((section) => {
+      section.addEventListener('toggle', () => {
+        if (!section.open) return;
+        sections.forEach((other) => {
+          if (other !== section) other.open = false;
+        });
+      });
+    });
+  });
+</script>

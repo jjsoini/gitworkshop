@@ -1,0 +1,55 @@
+---
+export const title = 'Tasks';
+
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/ui/Card.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Input from '../../components/ui/Input.astro';
+import Button from '../../components/ui/Button.astro';
+import Progress from '../../components/ui/Progress.astro';
+
+const tasks = [
+  { title: 'Write the release notes', owner: 'Aino', priority: 'High' },
+  { title: 'Fix the sidebar overflow on mobile', owner: 'Mikko', priority: 'Medium' },
+  { title: 'Archive the old marketing pages', owner: 'Sofia', priority: 'Low' },
+  { title: 'Prepare workshop repo', owner: 'Otto', priority: 'High' },
+];
+
+const priorityVariant = { High: 'danger', Medium: 'warning', Low: 'neutral' } as const;
+---
+
+<Base title={title} description="What the team is working on.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Tasks</h1>
+    <p class="mt-2 text-slate-600">Everything currently in flight, grouped by priority.</p>
+  </header>
+
+  <Progress value={45} label="Sprint progress (9 of 20 done)" class="mb-6" />
+
+  <Card>
+    <span slot="title">Open tasks</span>
+    <span slot="description">4 items</span>
+
+    <ul class="divide-y divide-slate-100">
+      {
+        tasks.map((task) => (
+          <li class="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
+            <input type="checkbox" class="h-4 w-4 rounded border-slate-300 accent-slate-900" />
+            <span class="flex-1 text-slate-900">{task.title}</span>
+            <span class="text-xs text-slate-400">{task.owner}</span>
+            <Badge variant={priorityVariant[task.priority as keyof typeof priorityVariant]}>
+              {task.priority}
+            </Badge>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div slot="footer" class="w-full">
+      <div class="flex w-full gap-3">
+        <Input placeholder="Add a task..." class="flex-1" />
+        <Button size="md">Add</Button>
+      </div>
+    </div>
+  </Card>
+</Base>

@@ -1,0 +1,161 @@
+---
+/**
+ * Base — the app shell: a left sidebar plus the main content area.
+ *
+ * SHARED FILE — workshop participants must not edit this.
+ *
+ * The sidebar builds itself from the files in src/pages/app/. Add a file there
+ * and its link appears here automatically — no edit to this file is needed.
+ */
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+// Read every page in src/pages/app/ at build time.
+const pageModules = import.meta.glob<Record<string, any>>('../pages/app/*.astro', { eager: true });
+
+function toLabel(slug: string) {
+  return slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+const navItems = Object.entries(pageModules)
+  .map(([path, mod]) => {
+    const slug = path.split('/').pop()!.replace(/\.astro$/, '');
+    return {
+      href: `/app/${slug}`,
+      // A page can export `const title = "..."` in its frontmatter to set its
+      // own nav label; otherwise the filename is used.
+      label: typeof mod.title === 'string' ? mod.title : toLabel(slug),
+    };
+  })
+  .sort((a, b) => a.label.localeCompare(b.label));
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => currentPath === href;
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    {description && <meta name="description" content={description} />}
+    <title>{title} · Qvik Workshop</title>
+  </head>
+  <body class="h-full bg-slate-50 text-slate-900 antialiased">
+    <div class="flex min-h-full">
+      <!-- Sidebar -->
+      <aside
+        class="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex"
+      >
+        <div class="flex h-16 items-center gap-2.5 border-b border-slate-100 px-6">
+          <span
+            class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-sm font-bold text-white"
+            >Q</span
+          >
+          <a href="/" class="text-sm font-semibold tracking-tight text-slate-900">Qvik Workshop</a>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto px-3 py-5">
+          <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Application
+          </p>
+          <ul class="space-y-0.5">
+            {
+              navItems.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                    class:list={[
+                      'block rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                      isActive(item.href)
+                        ? 'bg-slate-900 text-white'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                    ]}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+
+          <p class="px-3 pb-2 pt-6 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            Reference
+          </p>
+          <ul class="space-y-0.5">
+            <li>
+              <a
+                href="/components"
+                aria-current={isActive('/components') ? 'page' : undefined}
+                class:list={[
+                  'block rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  isActive('/components')
+                    ? 'bg-slate-900 text-white'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                ]}
+              >
+                Component kit
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="border-t border-slate-100 p-4">
+          <p class="text-xs leading-relaxed text-slate-400">
+            {navItems.length} pages · edit only your own one in
+            <code class="text-slate-500">src/pages/app/</code>
+          </p>
+        </div>
+      </aside>
+
+      <!-- Mobile nav -->
+      <div class="lg:hidden">
+        <details class="fixed left-0 right-0 top-0 z-20 border-b border-slate-200 bg-white">
+          <summary class="flex h-16 cursor-pointer list-none items-center gap-2.5 px-5">
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-sm font-bold text-white"
+              >Q</span
+            >
+            <span class="text-sm font-semibold">Qvik Workshop</span>
+            <span class="ml-auto text-slate-400">☰</span>
+          </summary>
+          <nav class="max-h-[70vh] overflow-y-auto border-t border-slate-100 px-3 py-4">
+            <ul class="space-y-0.5">
+              {
+                [...navItems, { href: '/components', label: 'Component kit' }].map((item) => (
+                  <li>
+                    <a
+                      href={item.href}
+                      class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+        </details>
+      </div>
+
+      <!-- Main content -->
+      <main class="min-w-0 flex-1 px-6 pb-20 pt-24 sm:px-10 lg:pt-12">
+        <div class="mx-auto max-w-4xl">
+          <slot />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+---
+export const title = 'Reports';
+
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/ui/Breadcrumb.astro';
+import Table from '../../components/ui/Table.astro';
+import Button from '../../components/ui/Button.astro';
+
+const columns = ['Report', 'Period', 'Owner', 'Status'];
+const rows = [
+  ['Quarterly revenue', 'Q3 2026', 'Finance', 'Published'],
+  ['Customer churn', 'August', 'Growth', 'Draft'],
+  ['Support response times', 'August', 'Support', 'Published'],
+  ['Feature adoption', 'Q3 2026', 'Product', 'In review'],
+];
+---
+
+<Base title={title} description="Generated reports and exports.">
+  <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Reports' }]} class="mb-4" />
+
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Reports</h1>
+    <p class="mt-2 text-slate-600">Every report generated in the last quarter.</p>
+  </header>
+
+  <Table columns={columns} rows={rows} caption="Updated nightly at 02:00 UTC." />
+
+  <div class="mt-6 flex gap-3">
+    <Button>New report</Button>
+    <Button variant="outline">Export as CSV</Button>
+  </div>
+</Base>

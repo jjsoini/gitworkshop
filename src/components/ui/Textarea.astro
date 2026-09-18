@@ -1,0 +1,18 @@
+---
+/**
+ * Textarea — a multi-line text field.
+ *
+ * Example: <Textarea id="notes" rows={4} placeholder="Write something..." />
+ */
+interface Props {
+  class?: string;
+  [key: string]: any;
+}
+const { class: className = '', rows = 4, ...rest } = Astro.props;
+---
+
+<textarea
+  rows={rows}
+  class={`flex w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+  {...rest}><slot /></textarea
+>
