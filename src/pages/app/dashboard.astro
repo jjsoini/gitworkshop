@@ -7,6 +7,23 @@ import Stat from '../../components/ui/Stat.astro';
 import Card from '../../components/ui/Card.astro';
 import Button from '../../components/ui/Button.astro';
 import Badge from '../../components/ui/Badge.astro';
+
+const ticketSegments = [
+  { label: 'Open',        count: 16, color: '#f59e0b' }, // amber-500
+  { label: 'In progress', count: 12, color: '#3b82f6' }, // blue-500
+  { label: 'Resolved',    count: 7,  color: '#10b981' }, // emerald-500
+  { label: 'Closed',      count: 2,  color: '#94a3b8' }, // slate-400
+];
+const ticketTotal = ticketSegments.reduce((sum, s) => sum + s.count, 0);
+
+let cursor = 0;
+const stops = ticketSegments.map((s) => {
+  const start = (cursor / ticketTotal) * 360;
+  cursor += s.count;
+  const end = (cursor / ticketTotal) * 360;
+  return `${s.color} ${start}deg ${end}deg`;
+});
+const donutGradient = `conic-gradient(${stops.join(', ')})`;
 ---
 
 <Base title={title} description="An at-a-glance summary of everything going on.">
@@ -43,6 +60,46 @@ import Badge from '../../components/ui/Badge.astro';
     <div slot="footer">
       <Button size="sm" href="/app/tasks">Open tasks</Button>
       <Button size="sm" variant="ghost">Dismiss</Button>
+    </div>
+  </Card>
+
+  <Card class="mt-6">
+    <span slot="title">Tickets by status</span>
+    <span slot="description">Breakdown of all {ticketTotal} tickets</span>
+
+    <div class="flex flex-col items-center gap-8 sm:flex-row sm:items-center">
+      <div
+        class="relative h-44 w-44 shrink-0 rounded-full"
+        style={`background: ${donutGradient};`}
+        role="img"
+        aria-label={`Donut chart of ${ticketTotal} tickets by status`}
+      >
+        <div class="absolute inset-4 flex flex-col items-center justify-center rounded-full bg-white">
+          <span class="text-3xl font-semibold tracking-tight">{ticketTotal}</span>
+          <span class="text-xs text-slate-500">total</span>
+        </div>
+      </div>
+
+      <ul class="w-full space-y-2 text-sm">
+        {ticketSegments.map((s) => (
+          <li class="flex items-center justify-between gap-3">
+            <span class="flex items-center gap-2">
+              <span
+                class="inline-block h-3 w-3 rounded-sm"
+                style={`background: ${s.color};`}
+                aria-hidden="true"
+              ></span>
+              <span class="text-slate-700">{s.label}</span>
+            </span>
+            <span class="tabular-nums text-slate-500">
+              {s.count}
+              <span class="ml-2 text-slate-400">
+                {Math.round((s.count / ticketTotal) * 100)}%
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   </Card>
 </Base>
