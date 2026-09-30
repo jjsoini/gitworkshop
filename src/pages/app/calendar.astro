@@ -5,19 +5,59 @@ import Base from '../../layouts/Base.astro';
 import Card from '../../components/ui/Card.astro';
 import Badge from '../../components/ui/Badge.astro';
 import Alert from '../../components/ui/Alert.astro';
+import Tabs from '../../components/ui/Tabs.astro';
 
 const events = [
-  { time: '09:00', title: 'Daily standup', kind: 'Recurring' },
-  { time: '11:30', title: 'Design critique', kind: 'Team' },
-  { time: '14:00', title: 'Git & Claude Code workshop', kind: 'Workshop' },
-  { time: '16:15', title: '1:1 with Sofia', kind: 'Personal' },
+  { time: '09:00', end: '09:15', title: 'Daily standup', kind: 'Recurring' },
+  { time: '11:30', end: '12:30', title: 'Design critique', kind: 'Team' },
+  { time: '14:00', end: '15:00', title: 'Git & Claude Code workshop', kind: 'Workshop' },
+  { time: '16:15', end: '16:45', title: '1:1 with Sofia', kind: 'Personal' },
 ];
+
+// "1 h 30 min" style duration between two HH:MM times.
+const duration = (start: string, end: string) => {
+  const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
+  const mins = toMin(end) - toMin(start);
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return [h ? `${h} h` : '', m ? `${m} min` : ''].filter(Boolean).join(' ');
+};
+
+// Week of 14–20 September 2026 (today is Friday the 18th).
+const weekDays = [
+  { name: 'Mon', date: 14, events: [{ time: '09:00', end: '09:15', title: 'Daily standup' }, { time: '13:00', end: '14:30', title: 'Sprint planning' }] },
+  { name: 'Tue', date: 15, events: [{ time: '09:00', end: '09:15', title: 'Daily standup' }, { time: '15:00', end: '16:00', title: 'Code review session' }] },
+  { name: 'Wed', date: 16, events: [{ time: '09:00', end: '09:15', title: 'Daily standup' }, { time: '10:30', end: '11:15', title: 'Customer call' }] },
+  { name: 'Thu', date: 17, events: [{ time: '09:00', end: '09:15', title: 'Daily standup' }] },
+  { name: 'Fri', date: 18, events: events.map((e) => ({ time: e.time, end: e.end, title: e.title })) },
+  { name: 'Sat', date: 19, events: [] },
+  { name: 'Sun', date: 20, events: [] },
+];
+
+// September 2026: the 1st is a Tuesday, so the grid (Mon-first) has 1 leading blank cell.
+const monthEvents: Record<number, string[]> = {
+  1: ['Sprint kickoff'],
+  8: ['Team lunch'],
+  14: ['Sprint planning'],
+  18: ['Git & Claude Code workshop', '1:1 with Sofia'],
+  22: ['Design critique'],
+  25: ['Retro'],
+  29: ['Quarter review'],
+};
+const leadingBlanks = 1;
+const daysInMonth = 30;
+const today = 18;
+const monthCells = [
+  ...Array.from({ length: leadingBlanks }, () => null),
+  ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+];
+const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 ---
 
 <Base title={title} description="What's happening today and this week.">
   <header class="mb-8">
     <h1 class="text-3xl font-semibold tracking-tight">Calendar</h1>
-    <p class="mt-2 text-slate-600">Everything scheduled for today, in order.</p>
+    <p class="mt-2 text-slate-600">Switch between day, week and month views.</p>
   </header>
 
   <Alert variant="info" title="Friday, 18 September">
@@ -25,24 +65,93 @@ const events = [
   </Alert>
 
   <Card class="mt-6">
-    <span slot="title">Today's schedule</span>
+    <span slot="title">Schedule</span>
 
-    <ol class="space-y-4">
-      {
-        events.map((event) => (
-          <li class="flex items-start gap-4">
-            <span class="w-14 shrink-0 pt-0.5 text-sm font-medium tabular-nums text-slate-400">
-              {event.time}
-            </span>
-            <div class="flex-1 border-l-2 border-slate-200 pl-4">
-              <p class="font-medium text-slate-900">{event.title}</p>
-              <Badge variant="outline" class="mt-1.5">
-                {event.kind}
-              </Badge>
+    <Tabs
+      tabs={[
+        { id: 'day', label: 'Day' },
+        { id: 'week', label: 'Week' },
+        { id: 'month', label: 'Month' },
+      ]}
+    >
+      <ol slot="day" class="space-y-4">
+        {
+          events.map((event) => (
+            <li class="flex items-start gap-4">
+              <span class="w-24 shrink-0 pt-0.5 text-sm font-medium tabular-nums text-slate-400">
+                {event.time}–{event.end}
+              </span>
+              <div class="flex-1 border-l-2 border-slate-200 pl-4">
+                <p class="font-medium text-slate-900">{event.title}</p>
+                <div class="mt-1.5 flex items-center gap-2">
+                  <Badge variant="outline">{event.kind}</Badge>
+                  <span class="text-xs text-slate-500">{duration(event.time, event.end)}</span>
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div slot="week" class="grid gap-3 sm:grid-cols-7">
+        {
+          weekDays.map((day) => (
+            <div
+              class={`rounded-lg border p-3 ${day.date === today ? 'border-slate-900 bg-slate-50' : 'border-slate-200'}`}
+            >
+              <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                {day.name} <span class="text-slate-900">{day.date}</span>
+              </p>
+              <ul class="mt-2 space-y-2">
+                {day.events.length === 0 && <li class="text-xs text-slate-400">Free</li>}
+                {day.events.map((event) => (
+                  <li class="text-xs">
+                    <span class="tabular-nums text-slate-400">
+                      {event.time}–{event.end}
+                    </span>
+                    <p class="font-medium text-slate-900">{event.title}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </li>
-        ))
-      }
-    </ol>
+          ))
+        }
+      </div>
+
+      <div slot="month">
+        <p class="mb-3 font-medium text-slate-900">September 2026</p>
+        <div class="overflow-x-auto">
+          <div class="grid min-w-[40rem] grid-cols-7 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200">
+            {
+              weekdayNames.map((name) => (
+                <div class="bg-slate-50 px-2 py-1.5 text-xs font-medium uppercase tracking-wide text-slate-400">
+                  {name}
+                </div>
+              ))
+            }
+            {
+              monthCells.map((day) => (
+                <div class="min-h-24 bg-white p-2">
+                  {day && (
+                    <>
+                      <span
+                        class={`inline-flex size-6 items-center justify-center rounded-full text-xs ${day === today ? 'bg-slate-900 font-semibold text-white' : 'text-slate-600'}`}
+                      >
+                        {day}
+                      </span>
+                      <ul class="mt-1 space-y-1">
+                        {(monthEvents[day] ?? []).map((title) => (
+                          <li class="truncate rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-700">{title}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </Tabs>
   </Card>
 </Base>
