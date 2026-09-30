@@ -1,0 +1,72 @@
+---
+export const title = 'Issues';
+
+import Base from '../../layouts/Base.astro';
+import Stat from '../../components/ui/Stat.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Alert from '../../components/ui/Alert.astro';
+
+const issues = [
+  { id: 101, title: 'Login button unresponsive on Safari', status: 'Open', variant: 'danger', assignee: 'Aino' },
+  { id: 98, title: 'Add dark mode to settings page', status: 'In progress', variant: 'info', assignee: 'Mikko' },
+  { id: 94, title: 'Invoice PDF shows wrong date format', status: 'Open', variant: 'danger', assignee: 'Sara' },
+  { id: 90, title: 'Update onboarding copy', status: 'Closed', variant: 'success', assignee: 'Aino' },
+] as const;
+---
+
+<Base title={title} description="Track bugs and feature requests.">
+  <header class="mb-8 flex items-center gap-4">
+    <svg
+      class="h-14 w-14 shrink-0"
+      viewBox="0 0 64 64"
+      role="img"
+      aria-label="Issues logo"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="64" height="64" rx="16" fill="#0f172a"></rect>
+      <circle cx="32" cy="32" r="16" fill="none" stroke="#f8fafc" stroke-width="4"></circle>
+      <line x1="32" y1="24" x2="32" y2="34" stroke="#f8fafc" stroke-width="4" stroke-linecap="round"></line>
+      <circle cx="32" cy="40" r="2.5" fill="#f8fafc"></circle>
+    </svg>
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight">Issues</h1>
+      <p class="mt-2 text-slate-600">Bugs and feature requests being tracked.</p>
+    </div>
+  </header>
+
+  <Alert variant="info" title="How issues work">
+    Every bug or feature request gets a number and one assignee. Move it to "In progress" when work
+    starts and "Closed" once it is fixed and reviewed.
+  </Alert>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-3">
+    <Stat label="Open" value="2" class="bg-green-100! border-green-200!" />
+    <Stat label="In progress" value="1" />
+    <Stat label="Closed" value="1" />
+  </div>
+
+  <div class="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <ul class="divide-y divide-slate-100">
+      {
+        issues.map((issue) => (
+          <li class="flex items-center justify-between gap-4 px-4 py-3">
+            <div>
+              <p class="font-medium text-slate-900">{issue.title}</p>
+              <p class="text-sm text-slate-500">#{issue.id} · Assigned to {issue.assignee}</p>
+            </div>
+            <Badge variant={issue.variant}>{issue.status}</Badge>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
+    <h2 class="mb-2 text-base font-semibold text-slate-900">Notes</h2>
+    <ul class="list-disc space-y-1 pl-5">
+      <li>The issues listed here are sample data for the workshop.</li>
+      <li>Red badges need attention first; blue ones are already being worked on.</li>
+      <li>Reference an issue in a commit message, e.g. "Fix login button (#101)".</li>
+    </ul>
+  </div>
+</Base>
