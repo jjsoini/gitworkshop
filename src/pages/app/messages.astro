@@ -1,0 +1,82 @@
+---
+export const title = 'Messages';
+
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/ui/Card.astro';
+import Avatar from '../../components/ui/Avatar.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import Textarea from '../../components/ui/Textarea.astro';
+
+const conversations = [
+  { name: 'Aino Virtanen', preview: 'Sounds good, see you at the review.', time: '09:14', unread: 2, active: true },
+  { name: 'Mikko Laine', preview: 'Deployment is done 🎉', time: '08:40', unread: 1, active: false },
+  { name: 'Sofia Nieminen', preview: 'Can you share the agenda?', time: 'Yesterday', unread: 0, active: false },
+  { name: 'Otto Koskinen', preview: 'Thanks for approving the invoice.', time: 'Yesterday', unread: 0, active: false },
+];
+
+const thread = [
+  { from: 'Aino Virtanen', text: 'Hi! Did you get a chance to look at the design notes?', time: '09:02', mine: false },
+  { from: 'Me', text: 'Yes, just finished. Mostly good, a couple of small tweaks on the header.', time: '09:08', mine: true },
+  { from: 'Aino Virtanen', text: 'Sounds good, see you at the review.', time: '09:14', mine: false },
+];
+---
+
+<Base title={title} description="Conversations with your team.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Messages</h1>
+    <p class="mt-2 text-slate-600">Direct conversations with your team.</p>
+  </header>
+
+  <div class="grid gap-8 lg:grid-cols-[320px_1fr]">
+    <Card>
+      <span slot="title">Conversations</span>
+      <ul class="-mx-2 space-y-3">
+        {
+          conversations.map((c) => (
+            <li class={`flex items-center gap-3 rounded-lg px-2 py-2 ${c.active ? 'bg-slate-100' : 'hover:bg-slate-50'}`}>
+              <Avatar name={c.name} />
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-medium text-slate-900">{c.name}</p>
+                <p class="truncate text-sm text-slate-500">{c.preview}</p>
+              </div>
+              <div class="flex shrink-0 flex-col items-end gap-1">
+                <span class="text-xs text-slate-400">{c.time}</span>
+                {c.unread > 0 && <Badge variant="info">{c.unread}</Badge>}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </Card>
+
+    <Card>
+      <span slot="title">Aino Virtanen</span>
+      <span slot="description">Active now</span>
+
+      <div>
+        {
+          thread.map((m, i) => (
+            <div
+              class={`flex w-full items-end gap-2 ${m.mine ? 'justify-end' : 'justify-start'} ${i === 0 ? '' : thread[i - 1].mine !== m.mine ? 'mt-10' : 'mt-2'}`}
+            >
+              {!m.mine && <Avatar name={m.from} size="sm" />}
+              <div
+                class={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${m.mine ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-900'}`}
+              >
+                <p>{m.text}</p>
+                <p class={`mt-1 text-xs ${m.mine ? 'text-slate-300' : 'text-slate-400'}`}>{m.time}</p>
+              </div>
+              {m.mine && <Avatar name={m.from} size="sm" />}
+            </div>
+          ))
+        }
+      </div>
+
+      <div slot="footer" class="flex w-full items-end gap-3">
+        <div class="flex-1"><Textarea name="reply" placeholder="Write a message…" rows={2} /></div>
+        <Button>Send</Button>
+      </div>
+    </Card>
+  </div>
+</Base>
