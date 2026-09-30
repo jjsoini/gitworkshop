@@ -3,16 +3,68 @@ export const title = 'Reports';
 
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/ui/Breadcrumb.astro';
-import Table from '../../components/ui/Table.astro';
 import Button from '../../components/ui/Button.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Stat from '../../components/ui/Stat.astro';
+import Tabs from '../../components/ui/Tabs.astro';
+import Input from '../../components/ui/Input.astro';
+import Label from '../../components/ui/Label.astro';
 
-const columns = ['Report', 'Period', 'Owner', 'Status'];
-const rows = [
-  ['Quarterly revenue', 'Q3 2026', 'Finance', 'Published'],
-  ['Customer churn', 'August', 'Growth', 'Draft'],
-  ['Support response times', 'August', 'Support', 'Published'],
-  ['Feature adoption', 'Q3 2026', 'Product', 'In review'],
+type Status = 'Published' | 'Draft' | 'In review';
+
+const reports: {
+  name: string;
+  views: number;
+  period: string;
+  owner: string;
+  status: Status;
+}[] = [
+  { name: 'Quarterly revenue', views: 1284, period: 'Q3 2026', owner: 'Finance', status: 'Published' },
+  { name: 'Customer churn', views: 312, period: 'August', owner: 'Growth', status: 'Draft' },
+  { name: 'Support response times', views: 946, period: 'August', owner: 'Support', status: 'Published' },
+  { name: 'Feature adoption', views: 587, period: 'Q3 2026', owner: 'Product', status: 'In review' },
+  { name: 'Marketing spend', views: 423, period: 'September', owner: 'Marketing', status: 'In review' },
+  { name: 'Hiring pipeline', views: 158, period: 'Q3 2026', owner: 'People', status: 'Draft' },
+  { name: 'Infrastructure costs', views: 739, period: 'September', owner: 'Engineering', status: 'Published' },
 ];
+
+// Status → Badge colour
+const statusVariant = {
+  Published: 'success',
+  Draft: 'neutral',
+  'In review': 'warning',
+} as const;
+
+const count = (status: Status) => reports.filter((r) => r.status === status).length;
+
+const tabs = [
+  { id: 'all', label: `All (${reports.length})` },
+  { id: 'published', label: `Published (${count('Published')})` },
+  { id: 'review', label: `In review (${count('In review')})` },
+  { id: 'draft', label: `Draft (${count('Draft')})` },
+];
+
+// Status → tab id, so the filter script knows which tab each row belongs to
+const statusTab = {
+  Published: 'published',
+  Draft: 'draft',
+  'In review': 'review',
+} as const;
+
+const columns = ['Report', 'Period', 'Owner', 'Views', 'Status'];
+
+// Numbers read best right-aligned
+const numericColumns = ['Views'];
+
+// Chart: bars sorted by views, axis rounded up to a clean step of 500
+const byViews = [...reports].sort((a, b) => b.views - a.views);
+const tickStep = 500;
+const chartMax = Math.ceil(Math.max(...reports.map((r) => r.views)) / tickStep) * tickStep;
+const ticks = Array.from({ length: chartMax / tickStep + 1 }, (_, i) => i * tickStep);
+const pct = (n: number) => `${(n / chartMax) * 100}%`;
+
+const viewButton =
+  'cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 aria-pressed:bg-white aria-pressed:text-slate-900 aria-pressed:shadow-sm';
 ---
 
 <Base title={title} description="Generated reports and exports.">
@@ -23,10 +75,203 @@ const rows = [
     <p class="mt-2 text-slate-600">Every report generated in the last quarter.</p>
   </header>
 
-  <Table columns={columns} rows={rows} caption="Updated nightly at 02:00 UTC." />
+  <section class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <Stat label="Total reports" value={reports.length} change="+2" trend="up" hint="vs. last quarter" />
+    <Stat label="Published" value={count('Published')} />
+    <Stat label="In review" value={count('In review')} />
+    <Stat label="Drafts" value={count('Draft')} />
+  </section>
+
+  <div class="mb-4 flex flex-wrap items-end justify-between gap-4">
+    <div class="w-full max-w-sm">
+      <Label for="report-search" class="mb-1.5">Search reports</Label>
+      <Input id="report-search" type="search" placeholder="Search by name or owner…" data-report-search />
+    </div>
+
+    <div class="inline-flex rounded-lg bg-slate-100 p-1" role="group" aria-label="View">
+      <button type="button" class={viewButton} data-view-button="table" aria-pressed="true">Table</button>
+      <button type="button" class={viewButton} data-view-button="chart" aria-pressed="false">Chart</button>
+    </div>
+  </div>
+
+  <!-- Tabs act as a status filter for the views below; their panels stay empty. -->
+  <Tabs tabs={tabs} class="mb-1" />
+
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" data-view="table">
+    <table class="w-full text-left text-sm">
+      <thead class="border-b border-slate-200 bg-slate-50">
+        <tr>
+          {
+            columns.map((col) => (
+              <th class={`px-4 py-3 font-medium text-slate-600 ${numericColumns.includes(col) ? 'text-right' : ''}`}>
+                {col}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {
+          reports.map((r) => (
+            <tr
+              class="transition-colors hover:bg-slate-50"
+              data-report-row
+              data-status={statusTab[r.status]}
+              data-search={`${r.name} ${r.owner}`.toLowerCase()}
+            >
+              <td class="px-4 py-3 font-medium text-slate-900">{r.name}</td>
+              <td class="px-4 py-3 text-slate-600">{r.period}</td>
+              <td class="px-4 py-3 text-slate-600">{r.owner}</td>
+              <td class="px-4 py-3 text-right tabular-nums text-slate-600">{r.views.toLocaleString('en-US')}</td>
+              <td class="px-4 py-3">
+                <Badge variant={statusVariant[r.status]}>{r.status}</Badge>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <p class="hidden px-4 py-6 text-center text-sm text-slate-500" data-empty>
+      No reports match your search.
+    </p>
+    <p class="border-t border-slate-100 px-4 py-2 text-xs text-slate-400">
+      Updated nightly at 02:00 UTC.
+    </p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm" data-view="chart" hidden>
+    <h2 class="text-base font-semibold text-slate-900">Views by report</h2>
+    <p class="mt-1 text-sm text-slate-500">Last quarter, most viewed first.</p>
+
+    <div class="relative mt-6">
+      <!-- Gridlines sit behind the bars, in the plot column only -->
+      <div class="pointer-events-none absolute inset-y-0 left-44 right-0" aria-hidden="true">
+        {ticks.map((t) => <div class="absolute inset-y-0 w-px bg-slate-100" style={`left: ${pct(t)}`} />)}
+      </div>
+
+      <ul class="relative space-y-1">
+        {
+          byViews.map((r) => (
+            <li
+              class="group flex cursor-default items-center rounded-md py-1 outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+              tabindex="0"
+              data-report-row
+              data-status={statusTab[r.status]}
+              data-search={`${r.name} ${r.owner}`.toLowerCase()}
+              data-bar-label={r.name}
+              data-bar-value={r.views.toLocaleString('en-US')}
+              aria-label={`${r.name}: ${r.views.toLocaleString('en-US')} views`}
+            >
+              <span class="w-44 shrink-0 truncate pr-3 text-sm text-slate-600 group-hover:text-slate-900">
+                {r.name}
+              </span>
+              <span class="flex h-6 flex-1 items-center">
+                <span
+                  class="h-5 rounded-r bg-[#2a78d6] transition-opacity group-hover:opacity-80 group-focus-visible:opacity-80"
+                  style={`width: ${pct(r.views)}`}
+                />
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Axis ticks -->
+      <div class="relative ml-44 mt-2 h-4 text-xs tabular-nums text-slate-400" aria-hidden="true">
+        {
+          ticks.map((t, i) => (
+            <span
+              class={`absolute ${i === 0 ? '' : i === ticks.length - 1 ? '-translate-x-full' : '-translate-x-1/2'}`}
+              style={`left: ${pct(t)}`}
+            >
+              {t.toLocaleString('en-US')}
+            </span>
+          ))
+        }
+      </div>
+
+      <div
+        class="pointer-events-none absolute z-10 hidden rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-md"
+        data-tooltip
+      >
+        <p class="text-sm font-semibold tabular-nums text-slate-900" data-tooltip-value></p>
+        <p class="text-xs text-slate-500" data-tooltip-label></p>
+      </div>
+    </div>
+
+    <p class="hidden py-6 text-center text-sm text-slate-500" data-empty>No reports match your search.</p>
+  </div>
 
   <div class="mt-6 flex gap-3">
     <Button>New report</Button>
     <Button variant="outline">Export as CSV</Button>
   </div>
 </Base>
+
+<script>
+  // Filter table rows and chart bars by the selected tab and the search text.
+  const search = document.querySelector<HTMLInputElement>('[data-report-search]');
+  const rows = document.querySelectorAll<HTMLElement>('[data-report-row]');
+  const empties = document.querySelectorAll('[data-empty]');
+  let activeTab = 'all';
+
+  function applyFilters() {
+    const query = search?.value.trim().toLowerCase() ?? '';
+    let visible = 0;
+    rows.forEach((row) => {
+      const tabMatch = activeTab === 'all' || row.dataset.status === activeTab;
+      const searchMatch = row.dataset.search?.includes(query) ?? false;
+      row.hidden = !(tabMatch && searchMatch);
+      if (!row.hidden) visible++;
+    });
+    empties.forEach((empty) => empty.classList.toggle('hidden', visible > 0));
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tab-trigger]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      activeTab = trigger.dataset.tabTrigger ?? 'all';
+      applyFilters();
+    });
+  });
+
+  search?.addEventListener('input', applyFilters);
+
+  // Switch between the table and chart views.
+  const viewButtons = document.querySelectorAll<HTMLElement>('[data-view-button]');
+  const views = document.querySelectorAll<HTMLElement>('[data-view]');
+
+  viewButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      viewButtons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+      views.forEach((v) => {
+        v.hidden = v.dataset.view !== button.dataset.viewButton;
+      });
+    });
+  });
+
+  // Chart tooltip: follows the hovered or focused bar.
+  const tooltip = document.querySelector<HTMLElement>('[data-tooltip]');
+  const tooltipValue = document.querySelector<HTMLElement>('[data-tooltip-value]');
+  const tooltipLabel = document.querySelector<HTMLElement>('[data-tooltip-label]');
+
+  function showTooltip(bar: HTMLElement, x: number) {
+    if (!tooltip || !tooltipValue || !tooltipLabel) return;
+    tooltipValue.textContent = `${bar.dataset.barValue} views`;
+    tooltipLabel.textContent = bar.dataset.barLabel ?? '';
+    tooltip.classList.remove('hidden');
+    const box = tooltip.parentElement!.getBoundingClientRect();
+    const left = Math.min(x - box.left + 12, box.width - tooltip.offsetWidth);
+    tooltip.style.left = `${Math.max(0, left)}px`;
+    tooltip.style.top = `${bar.offsetTop - tooltip.offsetHeight - 4}px`;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-bar-label]').forEach((bar) => {
+    bar.addEventListener('pointermove', (e) => showTooltip(bar, e.clientX));
+    bar.addEventListener('focus', () => {
+      const r = bar.getBoundingClientRect();
+      showTooltip(bar, r.left + r.width / 2);
+    });
+    bar.addEventListener('pointerleave', () => tooltip?.classList.add('hidden'));
+    bar.addEventListener('blur', () => tooltip?.classList.add('hidden'));
+  });
+</script>
