@@ -30,16 +30,34 @@ const priorityVariant = { High: 'danger', Medium: 'warning', Low: 'neutral' } as
     <span slot="title">Open tasks</span>
     <span slot="description">4 items</span>
 
-    <ul class="divide-y divide-slate-100">
+    <div class="mb-3 grid grid-cols-[auto_1fr_140px_120px] gap-4 px-3 pb-2 border-b border-slate-200">
+      <div></div>
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Tehtävä</div>
+      <button
+        data-sort="owner"
+        class="text-xs font-semibold text-slate-500 uppercase tracking-wide hover:text-slate-700 cursor-pointer flex items-center gap-1 text-left"
+      >
+        Tekijä <span class="sort-arrow hidden">↑</span>
+      </button>
+      <button
+        data-sort="priority"
+        class="text-xs font-semibold text-slate-900 uppercase tracking-wide hover:text-slate-700 cursor-pointer flex items-center gap-1 text-left"
+      >
+        Prioriteetti <span class="sort-arrow">↑</span>
+      </button>
+    </div>
+    <ul class="divide-y divide-slate-100" id="task-list">
       {
         tasks.map((task) => (
-          <li class="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
+          <li class="grid grid-cols-[auto_1fr_140px_120px] gap-4 items-center py-3 px-3 first:pt-0 last:pb-0" data-owner={task.owner} data-priority={task.priority}>
             <input type="checkbox" class="h-4 w-4 rounded border-slate-300 accent-slate-900" />
-            <span class="flex-1 text-slate-900">{task.title}</span>
-            <span class="text-xs text-slate-400">{task.owner}</span>
-            <Badge variant={priorityVariant[task.priority as keyof typeof priorityVariant]}>
-              {task.priority}
-            </Badge>
+            <span class="text-slate-900">{task.title}</span>
+            <span class="text-sm text-slate-700">{task.owner}</span>
+            <div>
+              <Badge variant={priorityVariant[task.priority as keyof typeof priorityVariant]}>
+                {task.priority}
+              </Badge>
+            </div>
           </li>
         ))
       }
@@ -52,4 +70,57 @@ const priorityVariant = { High: 'danger', Medium: 'warning', Low: 'neutral' } as
       </div>
     </div>
   </Card>
+
+  <script>
+    const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+    let currentSort = 'priority';
+    let currentDir = 'asc';
+
+    document.querySelectorAll('button[data-sort]').forEach(button => {
+      button.addEventListener('click', () => {
+        const sortBy = button.getAttribute('data-sort');
+
+        // Toggle direction if clicking same column
+        if (sortBy === currentSort) {
+          currentDir = currentDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          currentDir = 'asc';
+          currentSort = sortBy;
+        }
+
+        // Update button styles and arrows
+        document.querySelectorAll('button[data-sort]').forEach(btn => {
+          btn.classList.remove('text-slate-900');
+          btn.classList.add('text-slate-500');
+          btn.querySelector('.sort-arrow').classList.add('hidden');
+        });
+
+        button.classList.remove('text-slate-500');
+        button.classList.add('text-slate-900');
+        const arrow = button.querySelector('.sort-arrow');
+        arrow.classList.remove('hidden');
+        arrow.textContent = currentDir === 'asc' ? '↑' : '↓';
+
+        // Sort tasks
+        const list = document.getElementById('task-list');
+        const items = Array.from(list.children);
+
+        items.sort((a, b) => {
+          let aVal, bVal;
+          if (sortBy === 'priority') {
+            aVal = priorityOrder[a.getAttribute('data-priority')];
+            bVal = priorityOrder[b.getAttribute('data-priority')];
+          } else {
+            aVal = a.getAttribute('data-owner');
+            bVal = b.getAttribute('data-owner');
+            return currentDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+          }
+          const comparison = aVal - bVal;
+          return currentDir === 'asc' ? comparison : -comparison;
+        });
+
+        items.forEach(item => list.appendChild(item));
+      });
+    });
+  </script>
 </Base>
