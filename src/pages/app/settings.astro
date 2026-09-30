@@ -11,34 +11,44 @@ import Button from '../../components/ui/Button.astro';
 
 <Base title={title} description="Preferences for this workspace.">
   <header class="mb-8">
-    <h1 class="text-3xl font-semibold tracking-tight">Settings</h1>
-    <p class="mt-2 text-slate-600">Preferences that apply to this whole workspace.</p>
+    <h1 class="text-3xl font-semibold tracking-tight" data-i18n="pageTitle">Settings</h1>
+    <p class="mt-2 text-slate-600" data-i18n="pageIntro">Preferences that apply to this whole workspace.</p>
   </header>
 
+  <Card class="mb-6">
+    <span slot="title" data-i18n="langTitle">Language</span>
+    <span slot="description" data-i18n="langDesc">Choose the language used on this page</span>
+
+    <div class="flex gap-3" role="group" aria-label="Language" data-lang-picker>
+      <Button variant="outline" size="sm" data-lang="en" aria-pressed="true">English</Button>
+      <Button variant="outline" size="sm" data-lang="fi" aria-pressed="false">Suomi</Button>
+    </div>
+  </Card>
+
   <Card>
-    <span slot="title">Workspace</span>
-    <span slot="description">Basic details everyone on the team can see</span>
+    <span slot="title" data-i18n="wsTitle">Workspace</span>
+    <span slot="description" data-i18n="wsDesc">Basic details everyone on the team can see</span>
 
     <div class="space-y-4">
       <div class="space-y-1.5">
-        <Label for="workspace-name">Workspace name</Label>
+        <Label for="workspace-name"><span data-i18n="wsName">Workspace name</span></Label>
         <Input id="workspace-name" value="Qvik Training" />
       </div>
       <div class="space-y-1.5">
-        <Label for="workspace-url">Workspace URL</Label>
+        <Label for="workspace-url"><span data-i18n="wsUrl">Workspace URL</span></Label>
         <Input id="workspace-url" value="qvik-training.example.com" />
       </div>
     </div>
 
     <div slot="footer">
-      <Button size="sm">Save changes</Button>
-      <Button size="sm" variant="ghost">Cancel</Button>
+      <Button size="sm"><span data-i18n="save">Save changes</span></Button>
+      <Button size="sm" variant="ghost"><span data-i18n="cancel">Cancel</span></Button>
     </div>
   </Card>
 
   <Card class="mt-6">
-    <span slot="title">Notifications</span>
-    <span slot="description">Choose what lands in your inbox</span>
+    <span slot="title" data-i18n="notifTitle">Notifications</span>
+    <span slot="description" data-i18n="notifDesc">Choose what lands in your inbox</span>
 
     <div class="space-y-4">
       <Switch id="notify-email" label="Email me about new comments" checked />
@@ -47,3 +57,87 @@ import Button from '../../components/ui/Button.astro';
     </div>
   </Card>
 </Base>
+
+<script>
+  type Lang = 'en' | 'fi';
+
+  const messages: Record<Lang, Record<string, string>> = {
+    en: {
+      pageTitle: 'Settings',
+      pageIntro: 'Preferences that apply to this whole workspace.',
+      langTitle: 'Language',
+      langDesc: 'Choose the language used on this page',
+      wsTitle: 'Workspace',
+      wsDesc: 'Basic details everyone on the team can see',
+      wsName: 'Workspace name',
+      wsUrl: 'Workspace URL',
+      save: 'Save changes',
+      cancel: 'Cancel',
+      notifTitle: 'Notifications',
+      notifDesc: 'Choose what lands in your inbox',
+      'notify-email': 'Email me about new comments',
+      'notify-weekly': 'Send a weekly summary',
+      'notify-marketing': 'Product announcements',
+    },
+    fi: {
+      pageTitle: 'Asetukset',
+      pageIntro: 'Asetukset, jotka koskevat koko työtilaa.',
+      langTitle: 'Kieli',
+      langDesc: 'Valitse tällä sivulla käytettävä kieli',
+      wsTitle: 'Työtila',
+      wsDesc: 'Perustiedot, jotka kaikki tiimin jäsenet näkevät',
+      wsName: 'Työtilan nimi',
+      wsUrl: 'Työtilan osoite',
+      save: 'Tallenna muutokset',
+      cancel: 'Peruuta',
+      notifTitle: 'Ilmoitukset',
+      notifDesc: 'Valitse, mitä saat sähköpostiisi',
+      'notify-email': 'Lähetä sähköposti uusista kommenteista',
+      'notify-weekly': 'Lähetä viikkoyhteenveto',
+      'notify-marketing': 'Tuoteuutiset',
+    },
+  };
+
+  function apply(lang: Lang) {
+    const dict = messages[lang];
+    document.documentElement.lang = lang;
+    document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
+      el.textContent = dict[el.dataset.i18n!];
+    });
+    // Switch labels come from a component prop, so target them by input id.
+    Object.keys(dict)
+      .filter((key) => key.startsWith('notify-'))
+      .forEach((id) => {
+        document.querySelectorAll<HTMLElement>(`label[for="${id}"]`).forEach((label) => {
+          const target = label.querySelector('span') ?? label;
+          target.textContent = dict[id];
+        });
+      });
+    document.querySelectorAll<HTMLElement>('[data-lang]').forEach((btn) => {
+      const active = btn.dataset.lang === lang;
+      btn.setAttribute('aria-pressed', String(active));
+      btn.classList.toggle('!bg-slate-900', active);
+      btn.classList.toggle('!text-white', active);
+    });
+  }
+
+  function saved(): Lang {
+    try {
+      return localStorage.getItem('lang') === 'fi' ? 'fi' : 'en';
+    } catch {
+      return 'en';
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-lang]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang as Lang;
+      try {
+        localStorage.setItem('lang', lang);
+      } catch {}
+      apply(lang);
+    });
+  });
+
+  apply(saved());
+</script>
