@@ -9,10 +9,10 @@ import Button from '../../components/ui/Button.astro';
 import Badge from '../../components/ui/Badge.astro';
 
 const ticketSegments = [
-  { label: 'Open',        count: 16, color: '#f59e0b' }, // amber-500
-  { label: 'In progress', count: 12, color: '#3b82f6' }, // blue-500
-  { label: 'Resolved',    count: 7,  color: '#10b981' }, // emerald-500
-  { label: 'Closed',      count: 2,  color: '#94a3b8' }, // slate-400
+  { label: 'Waiting 😴',      count: 16, color: '#f59e0b' }, // amber-500
+  { label: 'Working on it 🔧', count: 12, color: '#3b82f6' }, // blue-500
+  { label: 'All fixed 🎉',    count: 7,  color: '#10b981' }, // emerald-500
+  { label: 'Put away 📦',     count: 2,  color: '#94a3b8' }, // slate-400
 ];
 const ticketTotal = ticketSegments.reduce((sum, s) => sum + s.count, 0);
 
@@ -26,57 +26,66 @@ const stops = ticketSegments.map((s) => {
 const donutGradient = `conic-gradient(${stops.join(', ')})`;
 ---
 
-<Base title={title} description="An at-a-glance summary of everything going on.">
-  <header class="mb-8">
-    <h1 class="text-3xl font-semibold tracking-tight">Dashboard</h1>
-    <p class="mt-2 text-slate-600">An at-a-glance summary of everything going on today.</p>
+<Base title={title} description="A quick look at how things are going.">
+  <header class="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-pink-300 via-amber-200 to-sky-300 p-8 shadow-md">
+    <span class="absolute right-6 top-3 animate-bounce text-4xl" aria-hidden="true">🦋</span>
+    <span class="unicorn-fly absolute top-2 text-4xl" style="animation-duration: 9s;" aria-hidden="true">🦄</span>
+    <span class="unicorn-fly absolute top-12 text-3xl" style="animation-duration: 13s; animation-delay: -5s;" aria-hidden="true">🦄</span>
+    <span class="unicorn-fly absolute top-6 text-2xl" style="animation-duration: 11s; animation-delay: -8s;" aria-hidden="true">🦄</span>
+    <span class="absolute bottom-3 right-24 text-3xl" aria-hidden="true">☁️</span>
+    <span class="absolute left-1/2 top-4 text-2xl" aria-hidden="true">✨</span>
+    <h1 class="text-4xl font-bold tracking-tight text-purple-900">Dashboard 🌈</h1>
+    <p class="mt-2 text-lg text-purple-800">Here is what is happening today! 🎈</p>
   </header>
 
   <div class="grid gap-4 sm:grid-cols-3">
-    <Stat label="Active users" value="2,481" change="+8.2%" trend="up" hint="vs. last week" />
-    <Stat label="Open tickets" value="37" change="-12%" trend="down" hint="vs. last week" />
-    <Stat label="Uptime" value="99.9%" change="stable" trend="flat" hint="last 30 days" />
+    <div class="rounded-2xl bg-gradient-to-br from-pink-300 to-rose-200 p-1.5 shadow-md transition hover:-rotate-1 hover:scale-105"><Stat label="Friends playing 🧒" value="2,481" change="more!" trend="up" hint="more than last week" /></div>
+    <div class="rounded-2xl bg-gradient-to-br from-amber-300 to-yellow-200 p-1.5 shadow-md transition hover:rotate-1 hover:scale-105"><Stat label="Problems to fix 🧩" value="37" change="fewer!" trend="down" hint="fewer than last week" /></div>
+    <div class="rounded-2xl bg-gradient-to-br from-sky-300 to-teal-200 p-1.5 shadow-md transition hover:-rotate-1 hover:scale-105"><Stat label="Always awake ☀️" value="99.9%" change="same" trend="flat" hint="almost never asleep this month" /></div>
   </div>
 
-  <Card class="mt-6">
-    <span slot="title">Today's focus</span>
-    <span slot="description">Three things worth your attention</span>
+  <div class="mt-6 rounded-3xl bg-gradient-to-br from-purple-300 via-fuchsia-200 to-pink-300 p-2 shadow-md">
+  <Card>
+    <span slot="title">What to do today ⭐</span>
+    <span slot="description">Three fun chores at home</span>
 
     <ul class="space-y-3">
       <li class="flex items-center justify-between gap-4">
-        <span>Review the new onboarding flow</span>
-        <Badge variant="warning">In review</Badge>
+        <span>Feed the fish like a tiny ocean chef 🐟</span>
+        <Badge variant="warning">Splashing</Badge>
       </li>
       <li class="flex items-center justify-between gap-4">
-        <span>Ship the September release notes</span>
-        <Badge variant="success">Ready</Badge>
+        <span>Toss the toys into the toy box like a super hero 🦸</span>
+        <Badge variant="success">Ready to go!</Badge>
       </li>
       <li class="flex items-center justify-between gap-4">
-        <span>Plan next quarter's roadmap</span>
-        <Badge>Not started</Badge>
+        <span>Give the plants a sip of water 🌱</span>
+        <Badge>Not yet</Badge>
       </li>
     </ul>
 
     <div slot="footer">
-      <Button size="sm" href="/app/tasks">Open tasks</Button>
-      <Button size="sm" variant="ghost">Dismiss</Button>
+      <Button size="sm" href="/app/tasks">See my jobs</Button>
+      <Button size="sm" variant="ghost">Hide this</Button>
     </div>
   </Card>
+  </div>
 
-  <Card class="mt-6">
-    <span slot="title">Tickets by status</span>
-    <span slot="description">Breakdown of all {ticketTotal} tickets</span>
+  <div class="mt-6 rounded-3xl bg-gradient-to-br from-emerald-300 via-sky-200 to-indigo-300 p-2 shadow-md">
+  <Card>
+    <span slot="title">Problems, sorted 🎨</span>
+    <span slot="description">All {ticketTotal} problems in one colorful circle</span>
 
     <div class="flex flex-col items-center gap-8 sm:flex-row sm:items-center">
       <div
         class="relative h-44 w-44 shrink-0 rounded-full"
         style={`background: ${donutGradient};`}
         role="img"
-        aria-label={`Donut chart of ${ticketTotal} tickets by status`}
+        aria-label={`Colorful circle showing ${ticketTotal} problems sorted by what is happening to them`}
       >
         <div class="absolute inset-4 flex flex-col items-center justify-center rounded-full bg-white">
           <span class="text-3xl font-semibold tracking-tight">{ticketTotal}</span>
-          <span class="text-xs text-slate-500">total</span>
+          <span class="text-xs text-slate-500">problems</span>
         </div>
       </div>
 
@@ -102,4 +111,24 @@ const donutGradient = `conic-gradient(${stops.join(', ')})`;
       </ul>
     </div>
   </Card>
+  </div>
 </Base>
+
+<style>
+  .unicorn-fly {
+    left: -3rem;
+    animation-name: unicorn-fly;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes unicorn-fly {
+    0%   { transform: translate(0, 0) rotate(-8deg); }
+    25%  { transform: translate(30vw, -10px) rotate(6deg); }
+    50%  { transform: translate(60vw, 10px) rotate(-6deg); }
+    75%  { transform: translate(90vw, -8px) rotate(6deg); }
+    100% { transform: translate(120vw, 0) rotate(-8deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .unicorn-fly { animation: none; left: 40%; }
+  }
+</style>
