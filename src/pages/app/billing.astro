@@ -2,39 +2,163 @@
 export const title = 'Billing';
 
 import Base from '../../layouts/Base.astro';
-import Stat from '../../components/ui/Stat.astro';
-import Alert from '../../components/ui/Alert.astro';
-import Table from '../../components/ui/Table.astro';
-import Progress from '../../components/ui/Progress.astro';
+
+const invoices = [
+  { id: '#2291', date: '1 Sep 2026', amount: '€49.00', status: 'Paid' },
+  { id: '#2244', date: '1 Aug 2026', amount: '€49.00', status: 'Paid' },
+  { id: '#2198', date: '1 Jul 2026', amount: '€49.00', status: 'Paid' },
+];
+
+const usage = [
+  { label: 'Seats used', detail: '17 of 25', value: 68, bar: 'from-indigo-400 to-sky-400' },
+  { label: 'Storage used', detail: '91%', value: 91, bar: 'from-amber-300 to-rose-500' },
+];
+
+const panel = 'rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm';
 ---
 
 <Base title={title} description="Plan, invoices and usage.">
-  <header class="mb-8">
-    <h1 class="text-3xl font-semibold tracking-tight">Billing</h1>
-    <p class="mt-2 text-slate-600">Your plan, usage and past invoices.</p>
-  </header>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&display=swap" rel="stylesheet" />
+  <div
+    class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-indigo-950 p-6 text-white shadow-2xl ring-1 ring-white/10 sm:p-10"
+  >
+    <!-- ambient glows, same as the card -->
+    <div class="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-sky-400/10 blur-3xl"></div>
 
-  <Alert variant="warning" title="Payment method expires soon">
-    The card ending in 4242 expires next month. Update it to avoid interruption.
-  </Alert>
+    <div class="relative">
+      <header class="mb-10">
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-indigo-300/80">Account</p>
+        <h1
+          class="mt-3 bg-gradient-to-br from-white via-indigo-100 to-sky-300 bg-clip-text text-7xl font-black uppercase leading-none tracking-tighter text-transparent sm:text-8xl lg:text-9xl"
+          style="font-family: 'Unbounded', 'Inter', system-ui, sans-serif;"
+        >
+          Billing
+        </h1>
+        <p class="mt-4 text-lg text-white/60">Your plan, usage and past invoices.</p>
+      </header>
 
-  <div class="mt-6 grid gap-4 sm:grid-cols-2">
-    <Stat label="Current plan" value="Team" hint="€49 / month" />
-    <Stat label="Next invoice" value="€49.00" hint="Due 1 October 2026" />
+      <!-- Hero: card + plan -->
+      <section class="grid gap-8 lg:grid-cols-[24rem_1fr] lg:items-center">
+        <div>
+          <div
+            class="group relative aspect-[1.586/1] w-full max-w-sm overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 via-slate-900 to-indigo-950 p-6 shadow-[0_25px_60px_-15px_rgba(99,102,241,0.55)] ring-1 ring-white/20 transition-transform duration-500 hover:-rotate-1 hover:scale-[1.02]"
+            role="img"
+            aria-label="Visa credit card ending in 4242, expires 10/26"
+          >
+            <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-400/25 blur-2xl"></div>
+            <div class="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-sky-400/15 blur-2xl"></div>
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.07] to-transparent"></div>
+
+            <div class="relative flex h-full flex-col justify-between">
+              <div class="flex items-start justify-between">
+                <span class="text-sm font-semibold tracking-wide text-white/80">Qvik Bank</span>
+                <svg class="h-6 w-6 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                  <path d="M8.5 8.5a5 5 0 0 1 0 7" />
+                  <path d="M12 6a9 9 0 0 1 0 12" />
+                  <path d="M15.5 3.5a13 13 0 0 1 0 17" />
+                </svg>
+              </div>
+
+              <div class="h-9 w-12 rounded-md bg-gradient-to-br from-amber-200 via-yellow-400 to-amber-500 shadow-inner ring-1 ring-amber-600/40">
+                <div class="grid h-full grid-cols-3 grid-rows-3 gap-px p-1 opacity-50">
+                  {Array.from({ length: 9 }).map(() => <span class="border border-amber-700/60" />)}
+                </div>
+              </div>
+
+              <p class="font-mono text-xl tracking-[0.18em] text-white sm:text-2xl">•••• •••• •••• 4242</p>
+
+              <div class="flex items-end justify-between">
+                <div class="flex gap-6">
+                  <div>
+                    <p class="text-[10px] uppercase tracking-widest text-white/50">Card holder</p>
+                    <p class="text-sm font-medium uppercase tracking-wide">Jani</p>
+                  </div>
+                  <div>
+                    <p class="text-[10px] uppercase tracking-widest text-white/50">Expires</p>
+                    <p class="text-sm font-medium tracking-wide">10/26</p>
+                  </div>
+                </div>
+                <span class="text-2xl font-black italic tracking-tight text-white">VISA</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-4 text-sm text-white/50">Charged for: Team plan subscription (€49 / month)</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex gap-3 rounded-2xl border border-amber-300/30 bg-amber-400/10 px-4 py-3 text-amber-100" role="alert">
+            <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-300 text-xs font-bold text-amber-300" aria-hidden="true">!</span>
+            <div class="text-sm">
+              <p class="font-semibold">Payment method expires soon</p>
+              <p class="mt-0.5 text-amber-100/80">The card ending in 4242 expires next month. Update it to avoid interruption.</p>
+            </div>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class={panel}>
+              <p class="text-sm font-medium text-white/50">Current plan</p>
+              <p class="mt-2 bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-4xl font-semibold tracking-tight text-transparent">Team</p>
+              <p class="mt-1 text-xs text-white/40">€49 / month</p>
+            </div>
+            <div class={panel}>
+              <p class="text-sm font-medium text-white/50">Next invoice</p>
+              <p class="mt-2 bg-gradient-to-r from-white to-sky-200 bg-clip-text text-4xl font-semibold tracking-tight text-transparent">€49.00</p>
+              <p class="mt-1 text-xs text-white/40">Due 1 October 2026</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Usage -->
+      <section class="mt-10">
+        <h2 class="mb-3 text-lg font-semibold">Usage</h2>
+        <div class={`${panel} grid gap-6 sm:grid-cols-2`}>
+          {usage.map((u) => (
+            <div>
+              <div class="mb-2 flex items-baseline justify-between text-sm">
+                <span class="font-medium text-white/80">{u.label}</span>
+                <span class="text-white/50">{u.detail}</span>
+              </div>
+              <div class="h-2.5 w-full overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow={u.value} aria-valuemin="0" aria-valuemax="100" aria-label={u.label}>
+                <div class={`h-full rounded-full bg-gradient-to-r ${u.bar} shadow-[0_0_12px_rgba(129,140,248,0.6)]`} style={`width: ${u.value}%`}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Invoices -->
+      <section class="mt-10">
+        <h2 class="mb-3 text-lg font-semibold">Recent invoices</h2>
+        <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-white/10 bg-white/[0.04]">
+              <tr>
+                {['Invoice', 'Date', 'Amount', 'Status'].map((c) => (
+                  <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-white/50">{c}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              {invoices.map((inv) => (
+                <tr class="transition-colors hover:bg-white/[0.05]">
+                  <td class="px-4 py-3 font-mono font-medium text-white">{inv.id}</td>
+                  <td class="px-4 py-3 text-white/60">{inv.date}</td>
+                  <td class="px-4 py-3 text-white/80">{inv.amount}</td>
+                  <td class="px-4 py-3">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-2.5 py-0.5 text-xs font-medium text-emerald-300 ring-1 ring-emerald-400/30">
+                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>{inv.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </div>
-
-  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-    <Progress value={68} label="Seats used (17 of 25)" />
-    <Progress value={91} label="Storage used" variant="danger" class="mt-5" />
-  </div>
-
-  <h2 class="mb-3 mt-8 text-lg font-semibold">Recent invoices</h2>
-  <Table
-    columns={['Invoice', 'Date', 'Amount', 'Status']}
-    rows={[
-      ['#2291', '1 Sep 2026', '€49.00', 'Paid'],
-      ['#2244', '1 Aug 2026', '€49.00', 'Paid'],
-      ['#2198', '1 Jul 2026', '€49.00', 'Paid'],
-    ]}
-  />
 </Base>
